@@ -1,84 +1,45 @@
 export default {
-  async fetch(request) {
-    const url = new URL(request.url);
-
-    // Health check
-    if (request.method === "GET" && url.pathname === "/") {
-      return json({
-        status: "ok",
-        service: "AI Options Trader",
-        message: "Worker is running",
-        version: "1.0"
-      });
-    }
-
-    // Options analysis endpoint
-    if (request.method === "POST" && url.pathname === "/analyze") {
-      try {
-        const body = await request.json();
-
-        const {
-          index = "NIFTY",
-          currentPrice,
-          timeframe,
-          optionData,
-          marketContext,
-          bias
-        } = body;
-
-        if (!currentPrice) {
-          return json({
-            status: "error",
-            message: "currentPrice is required"
-          }, 400);
-        }
-
-        return json({
-          status: "ok",
-          service: "AI Options Trader",
-          analysis: {
-            index,
-            currentPrice,
-            timeframe: timeframe || "not provided",
-            bias: bias || "neutral",
-            optionData: optionData || "not provided",
-            marketContext: marketContext || "not provided",
-
-            verdict: "NO TRADE",
-            probability: "Not enough data",
-            reason:
-              "The analysis engine needs reliable option-chain and market data before giving a CALL or PUT decision.",
-
-            riskPlan: {
-              entry: "Not available",
-              stopLoss: "Not available",
-              target: "Not available",
-              maxLoss: "Do not enter until sufficient data is available"
-            }
+  async fetch(request, env) {
+    try {
+      const response = await fetch(
+        "https://api.upstox.com/v2/market-quote/quotes?instrument_key=NSE_INDEX%7CNifty%2050",
+        {
+          headers: {
+            "Accept": "application/json",
+            "Authorization": `Bearer ${env.UPSTOX_TOKEN}`
           }
-        });
+        }
+      );
 
-      } catch (error) {
-        return json({
+      const data = await response.json();
+
+      return new Response(
+        JSON.stringify({
+          status: response.ok ? "ok" : "error",
+          upstox_status: response.status,
+          data: data
+        }),
+        {
+          status: response.ok ? 200 : response.status,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+    } catch (error) {
+      return new Response(
+        JSON.stringify({
           status: "error",
-          message: "Invalid JSON request",
-          details: error.message
-        }, 400);
-      }
+          message: error.message
+        }),
+        {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
     }
-
-    return json({
-      status: "error",
-      message: "Endpoint not found"
-    }, 404);
   }
 };
-
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data, null, 2), {
-    status,
-    headers: {
-      "Content-Type": "application/json"
-    }
-  });
-}

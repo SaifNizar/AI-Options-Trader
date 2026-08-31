@@ -1,9 +1,8 @@
 export default {
   async fetch(request, env) {
-
     const url = new URL(request.url);
 
-    // API
+    // API endpoint
     if (url.pathname === "/api/options") {
       return getOptions(request, env);
     }
@@ -12,66 +11,60 @@ export default {
     return new Response(`
 <!DOCTYPE html>
 <html>
-
 <head>
-
-<meta name="viewport"
-content="width=device-width, initial-scale=1">
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI Options Trader</title>
 
 <style>
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #0f172a;
+  background: #071326;
   color: white;
 }
 
 .container {
   max-width: 1000px;
   margin: auto;
-  padding: 16px;
+  padding: 18px;
 }
 
 h1 {
-  margin-bottom: 4px;
+  margin: 0;
+  font-size: 32px;
 }
 
 .subtitle {
   color: #94a3b8;
+  margin-top: 6px;
   margin-bottom: 20px;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
 .card {
-  background: #1e293b;
-  border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 12px;
+  background: #17283d;
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 14px;
+  border: 1px solid #223952;
 }
 
-.label {
+.hero {
+  padding: 22px;
+}
+
+.hero-title {
   color: #94a3b8;
-  font-size: 13px;
-}
-
-.value {
-  font-size: 24px;
-  font-weight: bold;
-  margin-top: 6px;
-}
-
-.small {
   font-size: 14px;
-  margin-top: 6px;
-  color: #cbd5e1;
+  margin-bottom: 8px;
+}
+
+.bias {
+  font-size: 32px;
+  font-weight: bold;
 }
 
 .bullish {
@@ -86,27 +79,89 @@ h1 {
   color: #facc15;
 }
 
-.score {
-  font-size: 32px;
+.confidence {
+  color: #cbd5e1;
+  margin-top: 8px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.metric-label {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.metric-value {
+  font-size: 25px;
   font-weight: bold;
+  margin-top: 7px;
+}
+
+.small {
+  color: #94a3b8;
+  font-size: 13px;
+  margin-top: 7px;
+}
+
+.section-title {
+  font-size: 21px;
+  margin-top: 0;
+}
+
+.levels {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.level {
+  background: #0e1d31;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+}
+
+.level-label {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.level-value {
+  font-size: 21px;
+  font-weight: bold;
+  margin-top: 6px;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
-  font-size: 11px;
-}
-
-th,
-td {
-  padding: 8px 3px;
-  text-align: right;
-  border-bottom: 1px solid #334155;
+  font-size: 12px;
 }
 
 th {
   color: #94a3b8;
+  padding: 10px 5px;
+  border-bottom: 1px solid #334155;
+}
+
+td {
+  padding: 10px 5px;
+  text-align: right;
+  border-bottom: 1px solid #26384d;
+}
+
+th:first-child,
+td:first-child {
+  text-align: left;
+}
+
+.atm {
+  background: #243a55;
+  font-weight: bold;
 }
 
 .loading {
@@ -120,56 +175,51 @@ th {
   padding: 20px 0;
 }
 
-.badge {
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 8px;
-  background: #334155;
+.footer {
+  color: #64748b;
+  text-align: center;
   font-size: 12px;
-}
-
-.green {
-  color: #22c55e;
-}
-
-.red {
-  color: #ef4444;
-}
-
-.yellow {
-  color: #facc15;
-}
-
-.refresh {
-  color: #94a3b8;
-  font-size: 12px;
-  margin-top: 15px;
+  padding: 10px;
 }
 
 @media(max-width:600px) {
 
-  .grid {
-    grid-template-columns: 1fr 1fr;
+  .container {
+    padding: 14px;
   }
 
-  .value {
+  h1 {
+    font-size: 27px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .metric-value {
     font-size: 20px;
   }
 
-  .score {
+  .levels {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .bias {
     font-size: 28px;
   }
 
   table {
-    font-size: 10px;
+    font-size: 11px;
   }
 
+  th,
+  td {
+    padding: 8px 3px;
+  }
 }
-
 </style>
-
 </head>
-
 
 <body>
 
@@ -178,53 +228,53 @@ th {
 <h1>📊 AI Options Trader</h1>
 
 <div class="subtitle">
-NIFTY 50 • Probability & Options Analysis
+NIFTY 50 • Options Intelligence Dashboard
 </div>
-
 
 <div id="status" class="loading">
-Loading market data...
+Loading live market data...
 </div>
 
-
-<div id="dashboard"
-style="display:none">
-
+<div id="dashboard" style="display:none">
 
 <!-- MARKET BIAS -->
 
-<div class="card">
+<div class="card hero">
 
-<div class="label">
+<div class="hero-title">
 AI MARKET BIAS
 </div>
 
-<div id="view"
-class="value">
+<div id="bias" class="bias">
 -
 </div>
 
-<div id="confidence"
-class="small">
+<div id="confidence" class="confidence">
+Confidence: -
+</div>
+
+<div id="reason" class="small">
 -
 </div>
 
 </div>
 
 
-<!-- MAIN DATA -->
+<!-- MAIN METRICS -->
 
 <div class="grid">
 
-
 <div class="card">
 
-<div class="label">
+<div class="metric-label">
 NIFTY 50
 </div>
 
-<div id="spot"
-class="value">
+<div id="spot" class="metric-value">
+-
+</div>
+
+<div id="expiry" class="small">
 -
 </div>
 
@@ -233,13 +283,16 @@ class="value">
 
 <div class="card">
 
-<div class="label">
+<div class="metric-label">
 PCR
 </div>
 
-<div id="pcr"
-class="value">
+<div id="pcr" class="metric-value">
 -
+</div>
+
+<div class="small">
+Put OI / Call OI
 </div>
 
 </div>
@@ -247,13 +300,16 @@ class="value">
 
 <div class="card">
 
-<div class="label">
+<div class="metric-label">
 MAX PAIN
 </div>
 
-<div id="maxPain"
-class="value">
+<div id="maxPain" class="metric-value">
 -
+</div>
+
+<div class="small">
+Estimated expiry pressure
 </div>
 
 </div>
@@ -261,13 +317,16 @@ class="value">
 
 <div class="card">
 
-<div class="label">
+<div class="metric-label">
 ATM STRIKE
 </div>
 
-<div id="atm"
-class="value">
+<div id="atm" class="metric-value">
 -
+</div>
+
+<div class="small">
+Closest strike to spot
 </div>
 
 </div>
@@ -275,164 +334,75 @@ class="value">
 
 <div class="card">
 
-<div class="label">
-SUPPORT
-</div>
-
-<div id="support"
-class="value bullish">
--
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="label">
-RESISTANCE
-</div>
-
-<div id="resistance"
-class="value bearish">
--
-</div>
-
-</div>
-
-
-</div>
-
-
-<!-- OI -->
-
-<div class="card">
-
-<h3>📈 Open Interest</h3>
-
-<div class="grid">
-
-
-<div>
-
-<div class="label">
+<div class="metric-label">
 TOTAL CALL OI
 </div>
 
-<div id="callOI"
-class="value">
+<div id="callOI" class="metric-value">
 -
 </div>
 
 </div>
 
 
-<div>
+<div class="card">
 
-<div class="label">
+<div class="metric-label">
 TOTAL PUT OI
 </div>
 
-<div id="putOI"
-class="value">
+<div id="putOI" class="metric-value">
 -
 </div>
 
 </div>
 
-
-<div>
-
-<div class="label">
-CALL OI CHANGE
-</div>
-
-<div id="callChange"
-class="value">
--
-</div>
-
 </div>
 
 
-<div>
-
-<div class="label">
-PUT OI CHANGE
-</div>
-
-<div id="putChange"
-class="value">
--
-</div>
-
-</div>
-
-
-</div>
-
-</div>
-
-
-<!-- STRONGEST LEVELS -->
+<!-- SUPPORT RESISTANCE -->
 
 <div class="card">
 
-<h3>🎯 Important Levels</h3>
+<h2 class="section-title">
+🎯 Support / Resistance
+</h2>
 
-<div class="grid">
+<div class="levels">
 
+<div class="level">
 
-<div>
-
-<div class="label">
-STRONGEST CALL OI
+<div class="level-label">
+SUPPORT 2
 </div>
 
-<div id="strongCall"
-class="value">
+<div id="support2" class="level-value bullish">
 -
 </div>
 
 </div>
 
 
-<div>
+<div class="level">
 
-<div class="label">
-STRONGEST PUT OI
+<div class="level-label">
+SUPPORT 1
 </div>
 
-<div id="strongPut"
-class="value">
+<div id="support1" class="level-value bullish">
 -
 </div>
 
 </div>
 
 
-<div>
+<div class="level">
 
-<div class="label">
-CALL POSITIONING
+<div class="level-label">
+RESISTANCE 1
 </div>
 
-<div id="callPosition"
-class="small">
--
-</div>
-
-</div>
-
-
-<div>
-
-<div class="label">
-PUT POSITIONING
-</div>
-
-<div id="putPosition"
-class="small">
+<div id="resistance1" class="level-value bearish">
 -
 </div>
 
@@ -441,33 +411,62 @@ class="small">
 
 </div>
 
+<div style="height:10px"></div>
+
+<div class="levels">
+
+<div class="level">
+
+<div class="level-label">
+RESISTANCE 2
+</div>
+
+<div id="resistance2" class="level-value bearish">
+-
+</div>
+
 </div>
 
 
-<!-- TRADE ZONE -->
+<div class="level">
+
+<div class="level-label">
+CALL OI / PUT OI
+</div>
+
+<div id="oiRatio" class="level-value">
+-
+</div>
+
+</div>
+
+
+<div class="level">
+
+<div class="level-label">
+ATM IV
+</div>
+
+<div id="atmIV" class="level-value">
+-
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- OPTIONS TABLE -->
 
 <div class="card">
 
-<h3>🧭 Market Zone</h3>
+<h2 class="section-title">
+📈 Nearby Strikes
+</h2>
 
-<div id="zone"
-class="value">
--
-</div>
-
-<div id="zoneText"
-class="small">
--
-</div>
-
-</div>
-
-
-<!-- OPTIONS -->
-
-<div class="card">
-
-<h3>🎯 Nearby Strikes</h3>
+<div style="overflow-x:auto">
 
 <table>
 
@@ -476,43 +475,46 @@ class="small">
 <tr>
 
 <th>Strike</th>
-
-<th>CE</th>
-
-<th>CE OI</th>
-
-<th>Δ OI</th>
-
-<th>CE IV</th>
-
-<th>PE</th>
-
-<th>PE OI</th>
-
-<th>Δ OI</th>
-
-<th>PE IV</th>
+<th>Call LTP</th>
+<th>Call OI</th>
+<th>Put OI</th>
+<th>Put LTP</th>
 
 </tr>
 
 </thead>
 
-
 <tbody id="options">
-
 </tbody>
 
 </table>
 
+</div>
 
-<div class="refresh">
+</div>
 
+
+<!-- ANALYSIS -->
+
+<div class="card">
+
+<h2 class="section-title">
+🧠 Market Interpretation
+</h2>
+
+<div id="interpretation" class="small"
+style="font-size:15px;line-height:1.7">
+-
+</div>
+
+</div>
+
+
+<div class="footer">
 Data refreshes automatically every 30 seconds.
-
+<br>
+For analysis only — not financial advice.
 </div>
-
-</div>
-
 
 </div>
 
@@ -521,67 +523,44 @@ Data refreshes automatically every 30 seconds.
 
 <script>
 
-
 async function loadData() {
 
   try {
 
-    const response =
-      await fetch("/api/options");
+    const response = await fetch("/api/options");
 
-    const data =
-      await response.json();
-
+    const data = await response.json();
 
     if (data.status !== "ok") {
-
       throw new Error(
-        data.message ||
-        "Unable to load market data"
+        data.message || "Unable to load market data"
       );
-
     }
 
+    const market = data.market;
+    const analysis = data.analysis;
 
-    const market =
-      data.market;
-
-    const analysis =
-      data.analysis;
-
-
-    document
-      .getElementById("status")
-      .style.display = "none";
-
-
-    document
-      .getElementById("dashboard")
-      .style.display = "block";
+    document.getElementById("status").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
 
 
     // SPOT
 
-    document
-      .getElementById("spot")
-      .textContent =
-      Number(
-        market.spot
-      ).toLocaleString("en-IN");
+    document.getElementById("spot").textContent =
+      Number(market.spot).toLocaleString("en-IN");
+
+
+    document.getElementById("expiry").textContent =
+      "Expiry: " + market.expiry;
 
 
     // BIAS
 
-    const view =
-      document.getElementById("view");
+    const bias = document.getElementById("bias");
 
+    bias.textContent = analysis.view;
 
-    view.textContent =
-      analysis.view;
-
-
-    view.className =
-      "value " +
+    bias.className = "bias " +
       (
         analysis.view === "BULLISH"
           ? "bullish"
@@ -591,126 +570,81 @@ async function loadData() {
       );
 
 
-    document
-      .getElementById("confidence")
-      .textContent =
-      "Confidence: " +
-      analysis.confidence +
-      "%";
+    document.getElementById("confidence").textContent =
+      "Confidence: " + analysis.confidence + "%";
+
+
+    document.getElementById("reason").textContent =
+      analysis.reason;
 
 
     // PCR
 
-    document
-      .getElementById("pcr")
-      .textContent =
-      analysis.pcr ?? "-";
+    document.getElementById("pcr").textContent =
+      analysis.pcr !== null
+        ? analysis.pcr
+        : "-";
 
 
     // MAX PAIN
 
-    document
-      .getElementById("maxPain")
-      .textContent =
+    document.getElementById("maxPain").textContent =
       analysis.max_pain ?? "-";
 
 
     // ATM
 
-    document
-      .getElementById("atm")
-      .textContent =
+    document.getElementById("atm").textContent =
       analysis.atm ?? "-";
-
-
-    // SUPPORT
-
-    document
-      .getElementById("support")
-      .textContent =
-      analysis.support ?? "-";
-
-
-    // RESISTANCE
-
-    document
-      .getElementById("resistance")
-      .textContent =
-      analysis.resistance ?? "-";
 
 
     // OI
 
-    document
-      .getElementById("callOI")
-      .textContent =
+    document.getElementById("callOI").textContent =
       Number(
         analysis.total_call_oi || 0
       ).toLocaleString("en-IN");
 
 
-    document
-      .getElementById("putOI")
-      .textContent =
+    document.getElementById("putOI").textContent =
       Number(
         analysis.total_put_oi || 0
       ).toLocaleString("en-IN");
 
 
-    document
-      .getElementById("callChange")
-      .textContent =
-      Number(
-        analysis.call_oi_change || 0
-      ).toLocaleString("en-IN");
+    // SUPPORT / RESISTANCE
+
+    document.getElementById("support1").textContent =
+      analysis.support1 ?? "-";
+
+    document.getElementById("support2").textContent =
+      analysis.support2 ?? "-";
+
+    document.getElementById("resistance1").textContent =
+      analysis.resistance1 ?? "-";
+
+    document.getElementById("resistance2").textContent =
+      analysis.resistance2 ?? "-";
 
 
-    document
-      .getElementById("putChange")
-      .textContent =
-      Number(
-        analysis.put_oi_change || 0
-      ).toLocaleString("en-IN");
+    // OI RATIO
+
+    document.getElementById("oiRatio").textContent =
+      analysis.oi_ratio ?? "-";
 
 
-    // STRONGEST OI
+    // ATM IV
 
-    document
-      .getElementById("strongCall")
-      .textContent =
-      analysis.strong_call_oi ?? "-";
-
-
-    document
-      .getElementById("strongPut")
-      .textContent =
-      analysis.strong_put_oi ?? "-";
+    document.getElementById("atmIV").textContent =
+      analysis.atm_iv !== null
+        ? analysis.atm_iv
+        : "-";
 
 
-    document
-      .getElementById("callPosition")
-      .textContent =
-      analysis.call_positioning;
+    // INTERPRETATION
 
-
-    document
-      .getElementById("putPosition")
-      .textContent =
-      analysis.put_positioning;
-
-
-    // ZONE
-
-    document
-      .getElementById("zone")
-      .textContent =
-      analysis.zone;
-
-
-    document
-      .getElementById("zoneText")
-      .textContent =
-      analysis.zone_description;
+    document.getElementById("interpretation").textContent =
+      analysis.interpretation;
 
 
     // TABLE
@@ -718,77 +652,53 @@ async function loadData() {
     const table =
       document.getElementById("options");
 
-
     table.innerHTML = "";
 
 
-    data.options.forEach(
-      row => {
+    data.options.forEach(function(row) {
 
-        const ce =
-          row.call;
-
-
-        const pe =
-          row.put;
+      const tr =
+        document.createElement("tr");
 
 
-        table.innerHTML +=
-
-          "<tr>" +
-
-          "<td>" +
-          row.strike +
-          "</td>" +
-
-          "<td>" +
-          (ce.ltp ?? "-") +
-          "</td>" +
-
-          "<td>" +
-          formatNumber(ce.oi) +
-          "</td>" +
-
-          "<td>" +
-          formatNumber(ce.oi_change) +
-          "</td>" +
-
-          "<td>" +
-          formatDecimal(ce.iv) +
-          "</td>" +
-
-          "<td>" +
-          (pe.ltp ?? "-") +
-          "</td>" +
-
-          "<td>" +
-          formatNumber(pe.oi) +
-          "</td>" +
-
-          "<td>" +
-          formatNumber(pe.oi_change) +
-          "</td>" +
-
-          "<td>" +
-          formatDecimal(pe.iv) +
-          "</td>" +
-
-          "</tr>";
-
+      if (row.strike === analysis.atm) {
+        tr.className = "atm";
       }
-    );
 
 
-  }
+      tr.innerHTML =
+        "<td>" +
+        row.strike +
+        "</td>" +
 
-  catch (error) {
+        "<td>" +
+        formatNumber(row.call.ltp) +
+        "</td>" +
 
-    document
-      .getElementById("status")
-      .innerHTML =
+        "<td>" +
+        formatOI(row.call.oi) +
+        "</td>" +
+
+        "<td>" +
+        formatOI(row.put.oi) +
+        "</td>" +
+
+        "<td>" +
+        formatNumber(row.put.ltp) +
+        "</td>";
+
+
+      table.appendChild(tr);
+
+    });
+
+
+  } catch (error) {
+
+    document.getElementById("status").innerHTML =
       '<div class="error">❌ ' +
       error.message +
-      "</div>";
+      '</div>';
 
   }
 
@@ -797,66 +707,63 @@ async function loadData() {
 
 function formatNumber(value) {
 
-  return Number(
-    value || 0
-  ).toLocaleString("en-IN");
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return "-";
+  }
+
+  return Number(value).toLocaleString(
+    "en-IN",
+    {
+      maximumFractionDigits: 2
+    }
+  );
 
 }
 
 
-function formatDecimal(value) {
+function formatOI(value) {
 
   if (
     value === null ||
     value === undefined
   ) {
-
     return "-";
-
   }
 
-  return Number(value)
-    .toFixed(2);
+  return Number(value).toLocaleString("en-IN");
 
 }
 
 
 loadData();
 
-
 setInterval(
   loadData,
   30000
 );
 
-
 </script>
 
 </body>
-
 </html>
 `, {
-
       headers: {
         "Content-Type":
           "text/html;charset=UTF-8"
       }
-
     });
-
   }
-
 };
 
 
-// ======================================================
-// OPTIONS ENGINE
-// ======================================================
+/* =====================================================
+   OPTIONS API
+   ===================================================== */
 
-async function getOptions(
-  request,
-  env
-) {
+async function getOptions(request, env) {
 
   try {
 
@@ -865,23 +772,20 @@ async function getOptions(
 
 
     /*
-      Upstox supports relative expiry
-      keywords such as current_week.
+      Example:
 
-      We use current_week automatically.
+      /api/options?expiry=2026-09-01
+
+      If no expiry is supplied,
+      automatically use the next Tuesday.
     */
 
     let expiry =
-      url.searchParams.get(
-        "expiry"
-      );
+      url.searchParams.get("expiry");
 
 
     if (!expiry) {
-
-      expiry =
-        "current_week";
-
+      expiry = getNextTuesday();
     }
 
 
@@ -892,27 +796,21 @@ async function getOptions(
         "NSE_INDEX|Nifty 50"
       ) +
       "&expiry_date=" +
-      encodeURIComponent(
-        expiry
-      );
+      encodeURIComponent(expiry);
 
 
     const response =
       await fetch(
         apiUrl,
         {
-
           headers: {
-
             "Accept":
               "application/json",
 
             "Authorization":
               "Bearer " +
               env.UPSTOX_TOKEN
-
           }
-
         }
       );
 
@@ -925,16 +823,13 @@ async function getOptions(
 
       return json(
         {
-
-          status:
-            "error",
+          status: "error",
 
           upstox_status:
             response.status,
 
           message:
             result
-
         },
         response.status
       );
@@ -950,13 +845,12 @@ async function getOptions(
 
       return json(
         {
-
-          status:
-            "error",
+          status: "error",
 
           message:
-            "No option-chain data returned"
+            "No option-chain data returned",
 
+          expiry
         },
         404
       );
@@ -964,246 +858,151 @@ async function getOptions(
     }
 
 
-    // ==================================================
-    // SPOT
-    // ==================================================
+    /*
+      UNDERLYING SPOT
+    */
 
     const spot =
-      chain[0]
-        .underlying_spot_price;
+      Number(
+        chain[0]
+          .underlying_spot_price
+      );
 
 
-    // ==================================================
-    // ACTUAL EXPIRY
-    // ==================================================
-
-    const actualExpiry =
-      chain[0].expiry ||
-      expiry;
-
-
-    // ==================================================
-    // TOTAL OI
-    // ==================================================
+    /*
+      TOTAL OI
+    */
 
     let totalCallOI = 0;
 
     let totalPutOI = 0;
 
 
-    let callOIChange = 0;
-
-    let putOIChange = 0;
-
-
-    for (
-      const row of chain
-    ) {
-
-      const call =
-        row.call_options
-        || {};
-
-
-      const put =
-        row.put_options
-        || {};
-
-
-      const callData =
-        call.market_data
-        || {};
-
-
-      const putData =
-        put.market_data
-        || {};
-
+    for (const row of chain) {
 
       const callOI =
-        callData.oi || 0;
-
-
-      const putOI =
-        putData.oi || 0;
-
-
-      const callPrevOI =
-        callData.prev_oi ||
-        0;
-
-
-      const putPrevOI =
-        putData.prev_oi ||
-        0;
-
-
-      totalCallOI +=
-        callOI;
-
-
-      totalPutOI +=
-        putOI;
-
-
-      callOIChange +=
-        callOI -
-        callPrevOI;
-
-
-      putOIChange +=
-        putOI -
-        putPrevOI;
-
-    }
-
-
-    // ==================================================
-    // PCR
-    // ==================================================
-
-    const pcr =
-      totalCallOI > 0
-        ? totalPutOI /
-          totalCallOI
-        : null;
-
-
-    // ==================================================
-    // ATM
-    // ==================================================
-
-    let atm =
-      null;
-
-
-    let atmDistance =
-      Infinity;
-
-
-    for (
-      const row of chain
-    ) {
-
-      const distance =
-        Math.abs(
-          row.strike_price -
-          spot
+        Number(
+          row.call_options
+            ?.market_data
+            ?.oi || 0
         );
 
 
-      if (
-        distance <
-        atmDistance
-      ) {
-
-        atmDistance =
-          distance;
-
-        atm =
-          row.strike_price;
-
-      }
-
-    }
-
-
-    // ==================================================
-    // SUPPORT / RESISTANCE
-    // ==================================================
-
-    let strongestPut =
-      null;
-
-    let strongestPutOI =
-      0;
-
-
-    let strongestCall =
-      null;
-
-    let strongestCallOI =
-      0;
-
-
-    for (
-      const row of chain
-    ) {
-
-      const strike =
-        row.strike_price;
-
-
       const putOI =
-        row.put_options
-          ?.market_data
-          ?.oi || 0;
+        Number(
+          row.put_options
+            ?.market_data
+            ?.oi || 0
+        );
 
 
-      const callOI =
-        row.call_options
-          ?.market_data
-          ?.oi || 0;
+      totalCallOI += callOI;
 
-
-      // Put OI below spot = support
-
-      if (
-        strike <= spot &&
-        putOI >
-        strongestPutOI
-      ) {
-
-        strongestPutOI =
-          putOI;
-
-        strongestPut =
-          strike;
-
-      }
-
-
-      // Call OI above spot = resistance
-
-      if (
-        strike >= spot &&
-        callOI >
-        strongestCallOI
-      ) {
-
-        strongestCallOI =
-          callOI;
-
-        strongestCall =
-          strike;
-
-      }
+      totalPutOI += putOI;
 
     }
 
 
-    // ==================================================
-    // MAX PAIN
-    // ==================================================
+    /*
+      PCR
+    */
 
-    let maxPain =
-      null;
+    const pcr =
+      totalCallOI > 0
+        ? totalPutOI / totalCallOI
+        : null;
 
 
-    let lowestPain =
-      Infinity;
+    /*
+      ATM
+    */
+
+    const sortedByDistance =
+      [...chain].sort(
+        (a, b) =>
+          Math.abs(
+            Number(a.strike_price) -
+            spot
+          ) -
+          Math.abs(
+            Number(b.strike_price) -
+            spot
+          )
+      );
+
+
+    const atm =
+      Number(
+        sortedByDistance[0]
+          .strike_price
+      );
+
+
+    /*
+      ATM IV
+    */
+
+    const atmRow =
+      chain.find(
+        row =>
+          Number(row.strike_price) === atm
+      );
+
+
+    const atmCallIV =
+      Number(
+        atmRow
+          ?.call_options
+          ?.option_greeks
+          ?.iv || 0
+      );
+
+
+    const atmPutIV =
+      Number(
+        atmRow
+          ?.put_options
+          ?.option_greeks
+          ?.iv || 0
+      );
+
+
+    const atmIV =
+      atmCallIV > 0 &&
+      atmPutIV > 0
+        ? Number(
+            (
+              (atmCallIV +
+                atmPutIV) / 2
+            ).toFixed(2)
+          )
+        : (
+            atmCallIV ||
+            atmPutIV ||
+            null
+          );
+
+
+    /*
+      MAX PAIN
+    */
+
+    let maxPain = null;
+
+    let lowestPain = Infinity;
 
 
     for (
       const candidate of chain
     ) {
 
-      const strike =
-        candidate.strike_price;
+      const candidateStrike =
+        Number(
+          candidate.strike_price
+        );
 
 
-      let pain =
-        0;
+      let pain = 0;
 
 
       for (
@@ -1211,47 +1010,51 @@ async function getOptions(
       ) {
 
         const rowStrike =
-          row.strike_price;
+          Number(
+            row.strike_price
+          );
 
 
         const callOI =
-          row.call_options
-            ?.market_data
-            ?.oi || 0;
+          Number(
+            row.call_options
+              ?.market_data
+              ?.oi || 0
+          );
 
 
         const putOI =
-          row.put_options
-            ?.market_data
-            ?.oi || 0;
+          Number(
+            row.put_options
+              ?.market_data
+              ?.oi || 0
+          );
 
 
         if (
           rowStrike >
-          strike
+          candidateStrike
         ) {
 
           pain +=
             (
               rowStrike -
-              strike
-            ) *
-            callOI;
+              candidateStrike
+            ) * callOI;
 
         }
 
 
         if (
           rowStrike <
-          strike
+          candidateStrike
         ) {
 
           pain +=
             (
-              strike -
+              candidateStrike -
               rowStrike
-            ) *
-            putOI;
+            ) * putOI;
 
         }
 
@@ -1263,406 +1066,387 @@ async function getOptions(
         lowestPain
       ) {
 
-        lowestPain =
-          pain;
+        lowestPain = pain;
 
         maxPain =
-          strike;
+          candidateStrike;
 
       }
 
     }
-
-
-    // ==================================================
-    // POSITIONING ANALYSIS
-    // ==================================================
-
-    let callWriting =
-      0;
-
-    let callBuying =
-      0;
-
-    let putWriting =
-      0;
-
-    let putBuying =
-      0;
-
-
-    for (
-      const row of chain
-    ) {
-
-      const call =
-        row.call_options
-        || {};
-
-
-      const put =
-        row.put_options
-        || {};
-
-
-      const callData =
-        call.market_data
-        || {};
-
-
-      const putData =
-        put.market_data
-        || {};
-
-
-      const callOI =
-        callData.oi || 0;
-
-
-      const putOI =
-        putData.oi || 0;
-
-
-      const callPrevOI =
-        callData.prev_oi ||
-        callOI;
-
-
-      const putPrevOI =
-        putData.prev_oi ||
-        putOI;
-
-
-      const callPrice =
-        callData.ltp || 0;
-
-
-      const callClose =
-        callData.close_price ||
-        callPrice;
-
-
-      const putPrice =
-        putData.ltp || 0;
-
-
-      const putClose =
-        putData.close_price ||
-        putPrice;
-
-
-      const callChange =
-        callOI -
-        callPrevOI;
-
-
-      const putChange =
-        putOI -
-        putPrevOI;
-
-
-      /*
-        Call:
-        Price down + OI up
-        = likely call writing
-      */
-
-      if (
-        callChange > 0 &&
-        callPrice <
-        callClose
-      ) {
-
-        callWriting +=
-          callChange;
-
-      }
-
-
-      /*
-        Call:
-        Price up + OI up
-        = likely call buying
-      */
-
-      if (
-        callChange > 0 &&
-        callPrice >
-        callClose
-      ) {
-
-        callBuying +=
-          callChange;
-
-      }
-
-
-      /*
-        Put:
-        Price down + OI up
-        = likely put writing
-      */
-
-      if (
-        putChange > 0 &&
-        putPrice <
-        putClose
-      ) {
-
-        putWriting +=
-          putChange;
-
-      }
-
-
-      /*
-        Put:
-        Price up + OI up
-        = likely put buying
-      */
-
-      if (
-        putChange > 0 &&
-        putPrice >
-        putClose
-      ) {
-
-        putBuying +=
-          putChange;
-
-      }
-
-    }
-
-
-    // ==================================================
-    // POSITIONING LABELS
-    // ==================================================
-
-    let callPositioning =
-      "Mixed";
-
-
-    if (
-      callWriting >
-      callBuying
-    ) {
-
-      callPositioning =
-        "Call Writing";
-
-    }
-
-    else if (
-      callBuying >
-      callWriting
-    ) {
-
-      callPositioning =
-        "Call Buying";
-
-    }
-
-
-    let putPositioning =
-      "Mixed";
-
-
-    if (
-      putWriting >
-      putBuying
-    ) {
-
-      putPositioning =
-        "Put Writing";
-
-    }
-
-    else if (
-      putBuying >
-      putWriting
-    ) {
-
-      putPositioning =
-        "Put Buying";
-
-    }
-
-
-    // ==================================================
-    // BIAS SCORE
-    // ==================================================
-
-    let score =
-      0;
 
 
     /*
-      PCR
+      SUPPORT / RESISTANCE
+
+      Put OI is used as a rough
+      support indicator.
+
+      Call OI is used as a rough
+      resistance indicator.
     */
 
-    if (
-      pcr !== null
-    ) {
+    const belowSpot =
+      chain
+        .filter(
+          row =>
+            Number(row.strike_price) <
+            spot
+        )
+        .sort(
+          (a, b) =>
+            Number(
+              b.put_options
+                ?.market_data
+                ?.oi || 0
+            ) -
+            Number(
+              a.put_options
+                ?.market_data
+                ?.oi || 0
+            )
+        );
 
-      if (
-        pcr >= 1.10
-      ) {
 
+    const aboveSpot =
+      chain
+        .filter(
+          row =>
+            Number(row.strike_price) >
+            spot
+        )
+        .sort(
+          (a, b) =>
+            Number(
+              b.call_options
+                ?.market_data
+                ?.oi || 0
+            ) -
+            Number(
+              a.call_options
+                ?.market_data
+                ?.oi || 0
+            )
+        );
+
+
+    const support1 =
+      belowSpot[0]
+        ? Number(
+            belowSpot[0]
+              .strike_price
+          )
+        : null;
+
+
+    const support2 =
+      belowSpot[1]
+        ? Number(
+            belowSpot[1]
+              .strike_price
+          )
+        : null;
+
+
+    const resistance1 =
+      aboveSpot[0]
+        ? Number(
+            aboveSpot[0]
+              .strike_price
+          )
+        : null;
+
+
+    const resistance2 =
+      aboveSpot[1]
+        ? Number(
+            aboveSpot[1]
+              .strike_price
+          )
+        : null;
+
+
+    /*
+      OI RATIO
+    */
+
+    const oiRatio =
+      totalCallOI > 0
+        ? Number(
+            (
+              totalPutOI /
+              totalCallOI
+            ).toFixed(3)
+          )
+        : null;
+
+
+    /*
+      MARKET BIAS ENGINE
+
+      This is deliberately simple.
+
+      PCR:
+      >= 1.20 = bullish
+      <= 0.80 = bearish
+
+      Spot vs Max Pain:
+      above max pain = bullish point
+      below max pain = bearish point
+
+      Support / resistance:
+      adds another point based
+      on relative position.
+    */
+
+    let score = 0;
+
+
+    if (pcr !== null) {
+
+      if (pcr >= 1.20) {
         score += 2;
-
       }
-
-      else if (
-        pcr >= 0.95
-      ) {
-
+      else if (pcr >= 1.00) {
         score += 1;
-
       }
-
-      else if (
-        pcr <= 0.75
-      ) {
-
+      else if (pcr <= 0.80) {
         score -= 2;
-
       }
-
-      else if (
-        pcr <= 0.90
-      ) {
-
+      else if (pcr < 1.00) {
         score -= 1;
-
       }
 
     }
 
 
-    /*
-      Put writing = bullish
-    */
-
     if (
-      putWriting >
-      callWriting
+      maxPain !== null
     ) {
 
-      score += 2;
-
-    }
-
-
-    /*
-      Call writing = bearish
-    */
-
-    if (
-      callWriting >
-      putWriting
-    ) {
-
-      score -= 2;
-
-    }
-
-
-    /*
-      Total OI change
-    */
-
-    if (
-      putOIChange >
-      Math.abs(callOIChange)
-    ) {
-
-      score += 1;
+      if (
+        spot >
+        maxPain + 50
+      ) {
+        score += 1;
+      }
+      else if (
+        spot <
+        maxPain - 50
+      ) {
+        score -= 1;
+      }
 
     }
 
 
     if (
-      callOIChange >
-      Math.abs(putOIChange)
+      support1 !== null &&
+      resistance1 !== null
     ) {
 
-      score -= 1;
+      const range =
+        resistance1 -
+        support1;
+
+
+      if (range > 0) {
+
+        const position =
+          (
+            spot -
+            support1
+          ) / range;
+
+
+        if (position < 0.30) {
+          score -= 1;
+        }
+        else if (
+          position > 0.70
+        ) {
+          score += 1;
+        }
+
+      }
 
     }
 
-
-    // ==================================================
-    // FINAL VIEW
-    // ==================================================
 
     let view =
       "NEUTRAL";
 
 
-    if (
-      score >= 3
-    ) {
-
-      view =
-        "BULLISH";
-
+    if (score >= 2) {
+      view = "BULLISH";
+    }
+    else if (score <= -2) {
+      view = "BEARISH";
     }
 
+
+    /*
+      CONFIDENCE
+
+      This is a heuristic confidence
+      score, NOT a probability that
+      the market will actually move.
+    */
+
+    let confidence =
+      50 +
+      Math.abs(score) * 8;
+
+
+    if (confidence > 90) {
+      confidence = 90;
+    }
+
+
+    /*
+      REASON
+    */
+
+    let reason = "";
+
+
+    if (view === "BULLISH") {
+
+      reason =
+        "Put-side positioning is relatively stronger and the combined signals lean upward.";
+
+    }
     else if (
-      score <= -3
+      view === "BEARISH"
     ) {
 
-      view =
-        "BEARISH";
+      reason =
+        "Call-side positioning is relatively stronger and the combined signals lean downward.";
+
+    }
+    else {
+
+      reason =
+        "The available option-chain signals are mixed, so the dashboard is avoiding a strong directional call.";
 
     }
 
 
-    // ==================================================
-    // CONFIDENCE
-    // ==================================================
+    /*
+      INTERPRETATION
+    */
 
-    const confidence =
-      Math.min(
-        95,
-        50 +
-        Math.abs(score) *
-        8
-      );
-
-
-    // ==================================================
-    // MARKET ZONE
-    // ==================================================
-
-    let zone =
-      "NEUTRAL ZONE";
-
-
-    let zoneDescription =
-      "Market is between major support and resistance.";
+    let interpretation =
+      "PCR is " +
+      (
+        pcr !== null
+          ? pcr.toFixed(3)
+          : "unavailable"
+      ) +
+      ". ";
 
 
     if (
-      spot <= strongestPut
+      support1 !== null
     ) {
 
-      zone =
-        "NEAR SUPPORT";
-
-      zoneDescription =
-        "Price is testing the major Put OI support zone.";
+      interpretation +=
+        "The strongest nearby put-OI support is around " +
+        support1 +
+        ". ";
 
     }
 
 
-    else if (
-      spot >= strongestCall
+    if (
+      resistance1 !== null
     ) {
 
-      zone =
-        "NEAR RESISTANCE";
+      interpretation +=
+        "The strongest nearby call-OI resistance is around " +
+        resistance1 +
+        ". ";
 
-      zoneDescription =
-        
+    }
+
+
+    if (
+      maxPain !== null
+    ) {
+
+      interpretation +=
+        "Estimated max pain is " +
+        maxPain +
+        ". ";
+
+    }
+
+
+    interpretation +=
+      "Treat these levels as positioning indicators rather than guaranteed support or resistance.";
+
+
+    /*
+      NEARBY STRIKES
+
+      Show 15 strikes around spot.
+    */
+
+    const nearby =
+      [...chain]
+        .sort(
+          (a, b) =>
+            Math.abs(
+              Number(
+                a.strike_price
+              ) -
+              spot
+            ) -
+            Math.abs(
+              Number(
+                b.strike_price
+              ) -
+              spot
+            )
+        )
+        .slice(0, 15)
+        .sort(
+          (a, b) =>
+            Number(
+              a.strike_price
+            ) -
+            Number(
+              b.strike_price
+            )
+        );
+
+
+    const options =
+      nearby.map(
+        row => {
+
+          const call =
+            row.call_options || {};
+
+
+          const put =
+            row.put_options || {};
+
+
+          return {
+
+            strike:
+              Number(
+                row.strike_price
+              ),
+
+
+            call: {
+
+              ltp:
+                call.market_data
+                  ?.ltp ?? null,
+
+              oi:
+                call.market_data
+   

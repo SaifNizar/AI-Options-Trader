@@ -239,15 +239,14 @@ async function loadData() {
 
     data.options.forEach(row => {
 
-      table.innerHTML += `
-        <tr>
-          <td>${row.strike}</td>
-          <td>${row.call.ltp ?? "-"}</td>
-          <td>${Number(row.call.oi || 0).toLocaleString("en-IN")}</td>
-          <td>${Number(row.put.oi || 0).toLocaleString("en-IN")}</td>
-          <td>${row.put.ltp ?? "-"}</td>
-        </tr>
-      `;
+      table.innerHTML +=
+  '<tr>' +
+  '<td>' + row.strike + '</td>' +
+  '<td>' + (row.call.ltp ?? "--") + '</td>' +
+  '<td>' + Number(row.call.oi || 0).toLocaleString("en-IN") + '</td>' +
+  '<td>' + Number(row.put.oi || 0).toLocaleString("en-IN") + '</td>' +
+  '<td>' + (row.put.ltp ?? "--") + '</td>' +
+  '</tr>';
 
     });
 

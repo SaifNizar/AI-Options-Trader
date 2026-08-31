@@ -1,0 +1,16 @@
+{
+  "name": "ai-options-trader",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "agents": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "wrangler": "latest"
+  }
+}
